@@ -4,7 +4,7 @@ title: "Data Engineers Blog"
 description: "Article on Scala, Spark and many more Big Data Engineering tools."
 logo: 'assets/images/logo.png'
 favicon: 'assets/images/logo.png'
-baseurl: /blog
+baseurl: /
 google_analytics: 'G-8JJED4TE0E'
 disqus: ''
 mailchimp-list: ''
