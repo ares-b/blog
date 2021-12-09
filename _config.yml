@@ -4,10 +4,10 @@ title: "Data Engineers Blog"
 description: "Article on Scala, Spark, Kafka and more"
 logo: 'assets/images/logo.png'
 favicon: 'assets/images/logo.jpg'
-baseurl: /
+baseurl: 
 google_analytics: 'G-8JJED4TE0E'
-disqus: ''
-mailchimp-list: ''
+disqus: 'dataengineers-me'
+mailchimp-list: 
 include: ["_pages"]
 permalink: /:title/
 
