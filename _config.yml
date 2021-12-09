@@ -1,7 +1,7 @@
 # Site
 name: "Data Engineers"
 title: "Data Engineers Blog"
-description: "Article on Scala, Spark and many more Big Data Engineering tools."
+description: "Article on Scala, Spark, Kafka and more"
 logo: 'assets/images/logo.png'
 favicon: 'assets/images/logo.png'
 baseurl: /
@@ -20,7 +20,7 @@ authors:
     email: arslane.bahlel@gmail.com
     web: https://dataengineers.me
     linkedin: https://www.linkedin.com/in/arslane-bahlel/
-    description: "Junior Data Engineer, been coding since the age of 14, Spark Jedi."
+    description: "Data Engineering, Scala enthusiast, i write blogs along my learning journeys"
  
 # Plugins
 plugins:
