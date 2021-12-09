@@ -1,7 +1,7 @@
 # Site
 name: "Data Engineers"
 title: "Data Engineers Blog"
-description: "Jekyll template, Medium styled, free for bloggers."
+description: "Article on Scala, Spark and many more Big Data Engineering tools."
 logo: 'assets/images/logo.png'
 favicon: 'assets/images/logo.png'
 baseurl: /blog
@@ -20,7 +20,7 @@ authors:
     email: arslane.bahlel@gmail.com
     web: https://dataengineers.me
     linkedin: https://www.linkedin.com/in/arslane-bahlel/
-    description: "Author of Mediumish, a Bootstrap Medium styled template available for WordPress, HTML, Ghost and Jekyll. You are currently previewing Jekyll template demo."
+    description: "Junior Data Engineer, been coding since the age of 14, Spark Jedi."
  
 # Plugins
 plugins:
