@@ -12,11 +12,7 @@ post_class: post-template
 
         <!-- Post Share -->
         <div class="col-md-3 flex-first pl-0">
-            {% if page.toc %}
-            {% include post_summary.html %}
-            {% else %}
-            {% include share.html %}
-            {% endif %}
+            {% include sidebar.html %}
         </div>
 
         <!-- Post -->
