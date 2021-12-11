@@ -3,8 +3,8 @@ name: "Data Engineering"
 title: "Data Engineers Blog"
 description: "Article on Scala, Spark, Kafka and more"
 logo: 'assets/images/logo.png'
-favicon: 'assets/images/favicon.png'
-baseurl: 
+favicon: 'assets/images/favicon.ico'
+baseurl:
 google_analytics: 'G-8JJED4TE0E'
 disqus: 'dataengineers-me'
 mailchimp-list: 
