@@ -22,6 +22,4 @@ Spark can run on **Local** mode,  **Standalone** mode**Cluster** mode or on .
 Local mode means that Spark launches all the tasks on a single JVM and the parallelism will be done according 
 to the number of threads. There's no task distribution on Local mode.
 
-This article will focus more on the Standalone and Cluster mode execution.
-
-![Spark Architecture](../assets/images/posts/spark-core-concepts/spark-architecture.png)
+![Spark Architecture](../assets/images/posts/spark-core-concepts/spark-architecture.png "zz")
