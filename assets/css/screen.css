@@ -188,10 +188,38 @@ section.recent-posts {
 }
 
 .post-top-meta .author-thumb {
-    width: 72px;
-    height: 72px;
+    width: 100px;
+    height: 100px;
+    display: block;
+    margin: 0 auto;
 }
 
+.resume-company{
+    margin-top: 20px;
+    position: relative;
+}
+
+.resume, .resume-company p{
+    line-height:20px;
+}
+
+.resume-logo-container{
+    padding-top:100px;
+    padding-bottom:100px;
+
+}
+.resume-logo {
+    max-width:100px;
+    max-height:100px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    left:0;
+    right: 0;
+    display:inline-block;
+    overflow: hidden;
+}
 .post-top-meta.authorpage .author-thumb {
     margin-top: 40px;
 }
@@ -387,12 +415,6 @@ blockquote {
 
 .sticky-top-offset {
     top: 100px;
-}
-
-@media (min-width:1024px) {
-    .share ul li {
-        display: block;
-    }
 }
 
 @media (max-width:999px) {

@@ -1,9 +1,9 @@
 # Site
-name: "Data Engineers"
+name: "Data Engineering"
 title: "Data Engineers Blog"
 description: "Article on Scala, Spark, Kafka and more"
 logo: 'assets/images/logo.png'
-favicon: 'assets/images/logo.jpg'
+favicon: 'assets/images/favicon.png'
 baseurl: 
 google_analytics: 'G-8JJED4TE0E'
 disqus: 'dataengineers-me'
@@ -15,13 +15,13 @@ permalink: /:title/
 authors:
   ares:
     name: Arslane BAHLEL 
-    display_name: Arès
+    display_name: Arslane
     gravatar: 2bf8d821e3b4c65541bf735a97b82658
     email: arslane.bahlel@gmail.com
     web: https://dataengineers.me
     linkedin: https://www.linkedin.com/in/arslane-bahlel/
-    description: "Data Engineering, Scala enthusiast, i write blogs along my learning journeys"
- 
+    description: "Data Engineering enthusiast"
+
 # Plugins
 plugins:
   - jekyll-paginate
