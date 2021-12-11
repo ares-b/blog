@@ -24,4 +24,4 @@ to the number of threads. There's no task distribution on Local mode.
 
 This article will focus more on the Standalone and Cluster mode execution.
 
-[Spark Architecture][{{ site.baseurl }}/assets/images/posts/spark-core-concepts/spark-architecture.png "Spark Architecture"]
+[Spark Architecture][../assets/images/posts/spark-core-concepts/spark-architecture.png "Spark Architecture"]
