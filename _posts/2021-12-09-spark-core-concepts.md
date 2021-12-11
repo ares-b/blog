@@ -1,55 +1,27 @@
 ---
 layout: post
-title:  "Education must also train one for quick, resolute and effective thinking."
+title:  "Spark Core Concepts"
 author: ares
-categories: [ Jekyll, tutorial ]
-image: assets/images/test-post-image.jpg
+categories: [ spark ]
+image: assets/images/posts/spark-core-concepts/featured.png
 toc: true
 show-post-image: false
-active: true
 ---
-ZOOOB
-There are lots of powerful things you can do with the Markdown editor
+# Introduction
+**Apache Spark** is a fast data processing engine dedicated to Big data, it allows to carry out processing on large 
+volumes of data in a parallel and distributed manner.
 
-If you've gotten pretty comfortable with writing in Markdown, then you may enjoy some more advanced tips about the types of things you can do with Markdown!
+Many of us already know about Spark but we often get confused with Spark's architecture and some of the 
+key concepts associated with it.
 
-As with the last post about the editor, you'll want to be actually editing this post as you read it so that you can see all the Markdown code we're using.
+In this article, I'll explain Spark's architecture and its key concepts.
 
+# Spark Architecture
+Spark can run on **Local** mode,  **Standalone** mode**Cluster** mode or on .
 
-## Special formatting
+Local mode means that Spark launches all the tasks on a single JVM and the parallelism will be done according 
+to the number of threads. There's no task distribution on Local mode.
 
-As well as bold and italics, you can also use some other special formatting in Markdown when the need arises, for example:
+This article will focus more on the Standalone and Cluster mode execution.
 
-+ ~~strike through~~
-### Haaa
-+ ==highlight==
-#### Hoo
-+ \*escaped characters\*
-
-
-## Writing code blocks
-
-There are two types of code elements which can be inserted in Markdown, the first is inline, and the other is block. Inline code is formatted by wrapping any word or words in back-ticks, `like this`. Larger snippets of code can be displayed across multiple lines using triple back ticks:
-### Haaa
-```
-.my-link {
-    text-decoration: underline;
-}
-```
-#### Hoo
-If you want to get really fancy, you can even add syntax highlighting using Rouge.
-### Haaa
-
-![walking]({{ site.baseurl }}/assets/images/8.jpg)
-
-## Reference lists
-
-The quick brown jumped over the lazy.
-
-Another way to insert links in markdown is using reference lists. You might want to use this style of linking to cite reference material in a Wikipedia-style. All of the links are listed at the end of the document, so you can maintain full separation between content and its source or reference.
-
-## Full HTML
-
-Perhaps the best part of Markdown is that you're never limited to just Markdown. You can write HTML directly in the Markdown editor and it will just work as HTML usually does. No limits! Here's a standard YouTube embed code as an example:
-
-<p><iframe style="width:100%;" height="315" src="https://www.youtube.com/embed/Cniqsc9QfDo?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe></p>
+[Spark Architecture][../assets/images/posts/spark-core-concepts/spark-architecture.png "Spark Architecture"]
