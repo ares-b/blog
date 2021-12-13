@@ -7,6 +7,7 @@ image: assets/images/posts/jvm-heap-space-vs-stack-memory/featured.png
 toc: true
 show-post-image: false
 featured: false
+hidden: true
 ---
 Whenever we declare variable, object, call a method or perform operations on a JVM based language like Java or Scala, 
 the JVM assigns memory to these operations from Heap Space or Stack Memory.
