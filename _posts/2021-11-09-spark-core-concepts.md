@@ -5,6 +5,8 @@ author: ares
 categories: [ spark ]
 image: assets/images/posts/spark-core-concepts/featured.png
 toc: true
+toc-min: 2
+toc-max: 3
 show-post-image: false
 featured: true
 ---
@@ -16,13 +18,22 @@ key concepts associated with it.
 
 In this article, I'll explain Spark's architecture and its key concepts.
 
-Before Spark, HDFS MapReduce used to store intermediate iteration results in disk (as show in the picture below), this process was really slow as it involves read/writes from disk each iteration.
+# Partitioning
+
+Before Spark, we used HDFS MapReduce to process Big Data, in a nutshell, data is split into Blocks (or partitions), each block goes into a worker node and is replicated into other nudes for fault tolerance, 
+when processing this data, each worker processes the data he stores. 
+
+Spark partitions works the same, they're logical chunks of data split across [executor][executors]'s RAM.
+
+![Spark Paritions](../assets/images/posts/spark-core-concepts/spark-partitions.png "Spark Partitions")
+
+# Spark Memory Abstraction
+
+Hadoop MapReduce used to store intermediate iteration results in disk (as show in the picture below), this process was really slow as it involves read/writes from disk each iteration.
 Plus, they are not suitable for some applications, especially those that reuse data through multiple operations such as most statistical learning algorithms, most of which
 are iterative, and requires shuffles operations across the cluster (joins for example). Shuffle operations on HDFS MapReduce were so resource consuming that it limited the potential of this distributed architecture.
 
 ![HDFS Processing](../assets/images/posts/spark-core-concepts/hdfs-read-write.png "HDFS Processing")
-
-# Spark Memory Abstraction
 
 The success of the Spark framework against the MapReduce implementation on Hadoop is due to its in-memory processing which will lead to cheaper Shuffle
 steps. Indeed, MapReduce does several disk reads/writes while Spark limits many of them and stores the intermediate step data in memory.
@@ -116,6 +127,8 @@ dsCars.select(col("brand").as[String], $"maxSpeed".as[Int]).show
 # Transformations and Actions
 
 Spark APIs supports two types of operations: transformations and actions.
+
+## Actions
 
 ## Transformations
 A transformation consists of creating a new RDD from another. Transformations are lazy evaluated,  
