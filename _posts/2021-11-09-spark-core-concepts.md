@@ -35,7 +35,8 @@ Later, on the [Spark In Depth Architecture] chapter, we'll what's the responsibi
 
 # Partitioning
 
-Before Spark, we used HDFS MapReduce to process Big Data, in a nutshell, data is split into Blocks (or partitions), each block goes is stored into a worker node (or data node) and is replicated on other nudes for fault tolerance, 
+Before Spark, we used HDFS MapReduce to process Big Data, in a nutshell, data is split into Blocks (or partitions), 
+each block is stored into a worker node (or data node) and is replicated on other nodes for fault tolerance, 
 when processing this data, each worker processes the data he stores. 
 
 <p align="center">
@@ -90,8 +91,8 @@ RDD was created to solve the problem that iterative algorithms and interactive c
 
 It acts as a data sharing abstraction in a cluster. When we talk about "distributed" in the definition of RDD, 
 we are actually referring to "shared", atomic, because it uses cache memory to persist data in RAM for reuse, 
-thus avoiding data replication to disk, which is necessary in Hadoop to ensure cluster availability. Thanks to 
-this mechanism, Spark is able to provide high availability and fault tolerance.
+thus avoiding data replication to disk, which is necessary in Hadoop to ensure cluster fault tolerance. Thanks to 
+this mechanism, Spark is able to provide fault tolerance and high performance.
 
 Since an RDD is an abstraction, it has no real existence, so it must be explicitly created or instantiated 
 through deterministic operations on existing data files or on other RDD instances. These operations are 
@@ -230,7 +231,7 @@ Spark with the help of the multiple components will prepare an execution plan an
     <em>Spark Execution Planning</em>
 </p>
 
-The components involved here are : Spark Analyzer, Catalyst Optimizer and Tungsten.
+The components involved here are : Spark Parser, Spark Analyzer, Catalyst Optimizer and Tungsten.
 
 ## Trees and Tree Transformations
 
@@ -328,7 +329,7 @@ it describes computation on data without defining how to these computations are 
 
 ### Unresolved Logical Plan
 
-First Catalyst parses the code written using the Dataframe, Datasets API or in SQL into a tree which will lead to the creation of the **Unresolved Logical Plan**.
+First **Spark Parser** parses the code written using the Dataframe, Datasets API or in SQL into a tree which will lead to the creation of the **Unresolved Logical Plan**.
 
 `df3` tree will be parsed by into the Tree below.
 
@@ -361,7 +362,7 @@ Also, no check is done to find out weather the columns we specified exists or no
 ### Resolved Logical PLan
 
 Once we've got the Unresolved logical Plan, Analyze Component will use the Catalog to figure out where these datasets and columns come from and types of their columns.
-Then, the Analyzer will verify and resolve that everything is okay (column names, data types, applicability of transformations, etc) by checking the metadata inside the Catalog.
+Then, the **Spark Analyzer** will verify and resolve that everything is okay (column names, data types, applicability of transformations, etc) by checking the metadata inside the Catalog.
 
 For example, if we have these 3 lines below, Analyzed will resolve the first one, while the 2nd and 3rd will be rejected, and it will throw a `AnalysisException`.
 
@@ -393,7 +394,7 @@ If there was a problem with the Catalog and the operations we're doing on the da
 
 ### Optimized Logical Plan
 
-Once the Logical Plan is resolved, Catalyst Optimizer will take the initiative to actually Optimize the Logical Plan
+Once the Logical Plan is resolved, **Catalyst Optimizer** will take the initiative to actually Optimize the Logical Plan
 by applying same plan type transformations.
 
 In a nutshell, Catalyst with the help of **Rule Executor** applies **Rule-based optimization**, these rules includes : Constant folding, 
@@ -423,10 +424,10 @@ This kind of rules optimizes where the `select` operations happens.
 By applying this rule to the tree in the `Unresolved Logical Plan` image will be transformed into the tree below :
 
 <p align="center">
-    <img alt="Projection Pruning Transformation" src="../assets/images/posts/spark-core-concepts/catalyst-predicate-pushdown.png" />
+    <img alt="Projection Pruning Transformation" src="../assets/images/posts/spark-core-concepts/catalyst-projection-pruning.png" />
 </p>
 <p align="center">
-    <em>Predicate Push-down Transformation</em>
+    <em>Projection Pruning Transformation</em>
 </p>    
 
 After applying these transformations to the tree, Catalyst will return the tree below :
@@ -453,11 +454,15 @@ Aggregate [id1#2L], [id1#2L, sum(v#183) AS sum(v)#189]
 ```
 
 As you can see in the Optimized Logical Plan and on the figure **Catalyst Optimized Logical Plan**, the filter condition was
-moved above the `Scan` node thanks to `Predicate push-down`. Also, the `Projection` is pushed before the `Join` operation thanks to `Projection Pruning`.
+moved below the `Scan` node thanks to `Predicate push-down`. Also, the `Projection` is pushed before the `Join` operation thanks to `Projection Pruning`.
 
-## Physical Plan
+## Physical Planning
  
-Coming soon
+Physical planning occurs after the Optimization of the Logical Plan.
+It specifies how the Logical Plan is going to be executed on the cluster. 
+By replacing Logical Node from the Logical Plan Tree by Physical nodes, and it does it 
+using [Different plan type Transformations]
+
 # Spark In Depth Architecture
 Spark Architecture is a **Master-Slave** architecture, and it consists of three components: Master node, Cluster Manager and Worker node(s).
 
@@ -474,7 +479,7 @@ The Driver process is always attached to one single Spark application.
 
 Driver and its components are responsible for:
 - Running the main()` method of your Java, Scala or Python Spark Application, it creates a [Spark Context or a Spark Session][spark-session-and-spark-context] which can be used to load data, transform it and write it somewhere
-- Breaking the application logic into Stages and Tasks [Tasks][spark-tasks], it check the user code and determines how many stages and how many task will be needed to process the data
+- Breaking the application logic into Stages and Tasks[Tasks][spark-tasks], it check the user code and determines how many stages and how many task will be needed to process the data
 - 
 
 # Core Concepts
@@ -488,7 +493,7 @@ Local mode means that Spark launches all the tasks on a single [JVM][Spark-Memor
 to the number of threads. There's no task distribution on Local mode.
 
 
-
+[Different plan type Transformations]: <#different-plan-type-transformation> "Different plan type Transformation"
 [driver]: <#driver> "Spark Driver"
 [Same plan type Transformations]: <#same-plan-type-transformation> "Same plan type Transformation"
 [Spark In Depth Architecture]: <#spark-in-depth-architecture> "Spark Driver"
