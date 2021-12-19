@@ -16,7 +16,7 @@ key concepts associated with it.
 
 # Spark Basic Architecture
 
-Spark's architecture is a Master-Slave Architecture, and it consists of three components : Driver, Cluster Manager and Executors.
+Spark is based on a Master-Slave Architecture, and it consists of three components : Driver, Cluster Manager and Executors.
 
 <p align="center">
     <img alt="Spark Basic Architecture" src="../assets/images/posts/spark-core-concepts/spark-basic-architecture.png" />
@@ -26,17 +26,16 @@ Spark's architecture is a Master-Slave Architecture, and it consists of three co
 </p>
 
 Driver has multiple responsibilities : 
-- Analyzes, distributes and schedules work across the executors
+- Analyzes, distributes and schedules the diffrent workloads across the executors
 - Monitors Spark Application
 
 While executors are responsible for processing the data that the driver assigns them.
 
-Later, on the [Spark In Depth Architecture] chapter, we'll what's the responsibilities of the cluster manager and see how all these components work together.
+Later, on the [Spark In Depth Architecture] chapter, we get to know about the cluster manager and its role on keeping the harmony between all the other components.
 
 # Partitioning
 
-Before Spark, we used HDFS MapReduce to process Big Data, in a nutshell, data is split into Blocks (or partitions), each block goes is stored into a worker node (or data node) and is replicated on other nudes for fault tolerance, 
-when processing this data, each worker processes the data he stores. 
+before Spark, we used to process Big Data with HDFS MapReduce which is spliting data into blocks (or partitions), each block is stored and processed on a slave node (data node) and replicated on other data nodes to assure availability.
 
 <p align="center">
     <img alt="Spark Partitions" src="../assets/images/posts/spark-core-concepts/spark-partitions.png" />
@@ -51,12 +50,11 @@ So basically, each partition will be processed by one executor, and each executo
 
 # Shuffling
 
-Data shuffling is that operation requiring data exchanges between Spark Workers.
-For example, a join operation between two datasets would require a Shuffle if these two datasets partitions does not live on the
+Data shuffling is when operation require data exchange between Spark Workers.
+For example, a join operation between two datasets would require a Shuffle if these two datasets partitions are not on the
 same worker node.
 
-One of the performance issues in parallelized processing relies on shuffles because they require network transfer.
-
+parallelized processing using shuffle is one of the major performance issues because it require network transfer.
 # Spark Memory Abstraction
 
 Hadoop MapReduce used to store intermediate iteration results in disk (as show in the picture below), this process was really slow as it involves read/writes from disk each iteration.
@@ -127,7 +125,7 @@ Dataframes are just like RDDs, a distributed collection of data, but, DFs are or
 Dataframes have key features of RDDs beside TypeSafety. But, they offer more interesting features :
 - Column Organization: as I said, Dataframes are distributed collection of data organized into named columns. It is conceptually equivalent to a table in a relational database
 - Handles Heterogeneous data: Dataframes comes with an API that allows us to process structured and unstructured data
-- Optimization: Dataframes have metadata which allows makes them compatible with optimization frameworks like Tungsten and Catalyst
+- Optimization: Dataframes have metadata which makes them compatible with optimization frameworks like Tungsten and Catalyst
 
 ### Limitations
 
@@ -177,7 +175,7 @@ For example, returning data to the driver (with operations like count or collect
 
 ## Narrow Dependency Transformations
 
-A narrow transformation is one that can doesn't require data shuffling, it can be applied to a single partition.
+A narrow transformation is one that doesn't require data shuffling, it can be applied to a single partition.
 
 For instance, `map` and `withColumn` operations are narrow.
 
@@ -192,8 +190,8 @@ For instance, `map` and `withColumn` operations are narrow.
 
 Wide dependencies in the other hand often requires data shuffling, moves the data in a particular way between the workers.
 
-Examples of wide dependencies are transformations are `groupByKey` and `join`, these transformations moves the data in a particular way between the workers,
-for example, according to the value of the keys. The data is partitioned so that data that shares the same key is in the same partition.
+Examples of wide dependencies transformations are `groupByKey` and `join`, these transformations moves the data in a particular way between the workers,
+for example, according to the value of the keys. The data is partitioned so that the ones who shares the same key is in the same partition.
 
 <p align="center">
     <img alt="Spark Wide Transformation" src="../assets/images/posts/spark-core-concepts/wide-transformation.png" />
@@ -204,11 +202,11 @@ for example, according to the value of the keys. The data is partitioned so that
 
 # Spark Execution Engine
 
-As we said earlier, the action triggers the evaluation of the transformations. In fact, it triggers construction of the Execution plan which 
+As we said earlier, the action triggers the evaluation of the transformations. In fact, it triggers the construction of the Execution plan which 
 will convert our code into the most optimized version before executing it.
 
 One thing to keep in mind is that, earlier we said that Spark does lazy evaluation. Indeed, it does but not for Execution plan.
-The code snippet below shows it.
+The code snippet below shows that.
 
 ```
 case class Car(brand : String , name : String, maxSpeed : Int)
@@ -234,7 +232,7 @@ The components involved here are : Spark Analyzer, Catalyst Optimizer and Tungst
 
 ## Trees and Tree Transformations
 
-Before going further, we must understand what's trees in Spark and why and how do Spark transforms them.
+Before going further, we must understand what are trees in Spark and why and how do Spark transforms them.
 
 Well, trees are the main data type in Spark Execution Engine. A Tree is parsed from a given user code of a Spark Application, 
 and passed through the Spark Execution Planning which will transform the parsed trees.
@@ -266,7 +264,7 @@ Example showed above is a really simple one and thus, can be optimized using onl
 we'd like the Spark Engine to apply multiple rules.
 
 Actually this is what it does, is uses a **Rule Executor** to transform a tree to another tree of the same type by applying many rules in batches, and, 
-every rule is implemented based on its transform.
+every rule is implemented based on its transformation.
 
 <p align="center">
     <img alt="Rule Executor" src="../assets/images/posts/spark-core-concepts/rule-executor.png" />
@@ -316,7 +314,7 @@ val df3 = df1.join(df2, df1("id1") === df2("id2")).filter("value > 50 * 1000").s
 ## Logical Planning
 
 Logical planning (c.f figure above) is the first step for the creation of the logical plan.
-it describes computation on data without defining how to these computations are done physically 
+it describes computation on data without defining how these computations are done physically 
 (it does not specify join algorithms for example).
 
 <p align="center">
@@ -330,7 +328,7 @@ it describes computation on data without defining how to these computations are 
 
 First Catalyst parses the code written using the Dataframe, Datasets API or in SQL into a tree which will lead to the creation of the **Unresolved Logical Plan**.
 
-`df3` tree will be parsed by into the Tree below.
+`df3` tree will be parsed into the Tree below.
 
 <p align="center">
     <img alt="Unresolved Logical Plan" src="../assets/images/posts/spark-core-concepts/unresolved-logical-plan.png" />
@@ -355,15 +353,15 @@ Aggregate [id1#2L], [id1#2L, sum(v#183) AS sum(v)#189]
                +- Range (0, 20000000, step=1, splits=Some(8))
 ```
 
-At this point, Spark doesn't do any optimization, he just parses the code we wrote into a tree.
-Also, no check is done to find out weather the columns we specified exists or not, nothing is checked here, that's why it's called Unresolved.
+At this point, Spark doesn't do any optimization, it just parses the code we wrote into a tree.
+Also, no check is done to find out if the columns we specified exists or not, nothing is checked here, that's why it's called Unresolved.
 
 ### Resolved Logical PLan
 
 Once we've got the Unresolved logical Plan, Analyze Component will use the Catalog to figure out where these datasets and columns come from and types of their columns.
 Then, the Analyzer will verify and resolve that everything is okay (column names, data types, applicability of transformations, etc) by checking the metadata inside the Catalog.
 
-For example, if we have these 3 lines below, Analyzed will resolve the first one, while the 2nd and 3rd will be rejected, and it will throw a `AnalysisException`.
+For example, if we have these 3 lines below, Analyzer will resolve the first one, while the 2nd and 3rd will be rejected, and it will throw a `AnalysisException`.
 
 ```
 df.select("id") // OK Column exists in Catalog
@@ -388,7 +386,7 @@ Aggregate [id1#2L], [id1#2L, sum(v#183) AS sum(v)#189]
                +- Range (0, 20000000, step=1, splits=Some(8))
 ```
 
-As you can see, the Logical Plan slightly changes, Spark now knows what are the type of columns `id1` and `v`.
+As you can see, the Logical Plan slightly changes, Spark now knows what are the types of columns `id1` and `v`.
 If there was a problem with the Catalog and the operations we're doing on the dataframes, Analyzer would have thrown an `AnalysisException`.
 
 ### Optimized Logical Plan
@@ -467,14 +465,14 @@ Spark Architecture is a **Master-Slave** architecture, and it consists of three 
 The Driver process runs on a [JVM][spark-memory-management], it orchestrates and monitors the execution of a Spark application.
 
 Spark Driver can run into two deployment modes : 
-1. Client mode : the driver process lives in the host machine submitting the application, so the driver will be running outside the cluster. For example, when you run spark-shell, you're in client mode and the driver process is attached to your terminal. When you quit the shell, the driver process terminates
+1. Client mode : the driver process lives in the host machine submitting the application, so the driver will be running outside the cluster. For example, when you run spark-shell, you're in client mode and the driver process is attached to your terminal. When you exit the shell, the driver process terminates
 2. Cluster mode : driver lives inside the cluster (in a worker machine)
 
 The Driver process is always attached to one single Spark application.
 
 Driver and its components are responsible for:
 - Running the main()` method of your Java, Scala or Python Spark Application, it creates a [Spark Context or a Spark Session][spark-session-and-spark-context] which can be used to load data, transform it and write it somewhere
-- Breaking the application logic into Stages and Tasks [Tasks][spark-tasks], it check the user code and determines how many stages and how many task will be needed to process the data
+- Breaking the application logic into Stages and Tasks [Tasks][spark-tasks], it checks the user code and determines how many stages and how many tasks will be needed to process the data
 - 
 
 # Core Concepts
