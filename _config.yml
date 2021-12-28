@@ -50,8 +50,11 @@ kramdown:
   input: GFM
   syntax_highlighter: rouge
   syntax_highlighter_opts:
+    default_lang: scala
     block:
       line_numbers: true
+    span:
+      css_class: span-highlight
 
 # Adsense (change to "enabled" to activate, also your client id and ad slot. Create a new ad unit from your Adsense account to get the slot.)
 adsense: "disabled"

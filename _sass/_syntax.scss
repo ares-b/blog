@@ -65,5 +65,12 @@
 	.il { color: #009999 } /* Literal.Number.Integer.Long */
 }
 
+code.highlighter-rouge{
+    background-color: #e3e6e8;
+    padding: 2px 4px;
+    color: #313437;
+    border-radius: 3px;
+}
+
 td.rouge-code { width: 100%;}
 pre.lineno { color: #9999;}
