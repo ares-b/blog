@@ -18,7 +18,7 @@ For instance, let's try to find the second odd number between 1000 and 1000000:
 ```
 In terms of performance, this implementation is reaaaaaaaaaaly bad !
 
-It constructs all prime numbers between 1000 and 1000000, but only ever looks at the second elements of that list.
+It constructs all odd numbers between 1000 and 1000000, but only ever looks at the second elements of that list.
 
 # Lazy Lists
 
@@ -45,7 +45,7 @@ on most Scala's collection library :
 (1 to 1000000).to(LazyList)
 ```
 
-Lazy Lists supports almost all methods of lists, for instance, to find the second prime number between 1000 and 1000000 :
+Lazy Lists supports almost all methods of lists, for instance, to find the second odd number between 1000 and 1000000 :
 ```
 LazyList.range(1000, 1000000).filter(x => x % 2 != 0)(1)
 ```
@@ -247,7 +247,7 @@ If we tried to compute all natural number by doing `naturals.toList`, the code w
 The best uses cases for Lazy Lists are algorithms that require an upper bound. Indeed, with Lazy Evaluation, those algorithms can be
 easily extended to arbitrary size.
 
-The Sieve of Eratosthenes is a good example for this statement, and it can be used to calculate prime numbers.
+The Sieve of Eratosthenes is a good example for this statement, and it can be used to calculate odd numbers.
 
 The idea is as follows :
 - Start with all integers from 2, the first prime number
