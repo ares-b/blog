@@ -3,7 +3,7 @@ layout: post
 title:  "Spark Query Execution Engine"
 author: ares
 categories: [ spark ]
-image: assets/images/posts/spark-core-concepts/featured.png
+image: assets/images/posts/spark-execution-engine/featured.png
 toc: true
 show-post-image: false
 featured: hidden
@@ -14,7 +14,7 @@ I think that we're all familiar with the Diagram below, if it's not your case, w
 does internally when processing data using Spark SQL.
 
 <p align="center">
-    <img alt="Spark Execution Planning" src="../assets/images/posts/spark-core-concepts/spark-execution-planning.png" />
+    <img alt="Spark Execution Planning" src="../assets/images/posts/spark-execution-engine/spark-execution-planning.png" />
 </p>
 <p align="center">
     <em>Spark Execution Planning</em>
@@ -45,6 +45,8 @@ Catalyst will manipulate those trees to validate, optimize your queries and comp
 
 It may be a bit abstract for now, but don't worry, this article's goal is to explain to you everything going under Spark's hood.
 
+## Catalog
+
 ## Trees
 
 So, trees are the main data type in Spark Execution Planning. They're parsed from a given user code of a Spark Application and 
@@ -58,7 +60,7 @@ TreeNodes are recursive data structures that can have zero, one or many children
 
 It is the base class for [Expressions](#expression) and [Query Plans](#query-plan).
 
-#### Expression
+## Expression
 
 Expressions are executable TreeNodes in Catalyst Tree that can evaluate a result given a certain input values. In other terms, 
 Expressions can produce a JVM object per `Internal Row`.
@@ -78,12 +80,17 @@ you'd probably want to use `lit` function, `lit` is build on-top of `Literal` Ca
 
 Expression are also used in [Catalyst Transformations](#trees-transformations), in [Logical Operators](#logical-plan) and [Physical Operators](#physical-plan), etc.
 
-#### QueryPlan
+## QueryPlan
 
 Query Plans is an abstract class for Spark's [Logical Planning](#logical-plan) and [Physical Planning](#physical-plan).
-It's a tree of TreeNodes that in turn can have trees of Catalyst Expressions.
+It's a tree of operators that have a tree of expressions.
 
-A QueryPlan has sequence of `Attribute` Expressions 
+A QueryPlan has sequence of `Attribute` Expressions that will be used to build the output schema.
+
+### Logical Plan
+
+### Physical Plan
+
 ## Trees transformations
 
 Trees transformations are defined as Partial Functions.
@@ -98,10 +105,10 @@ Transforms the tree without changing its type:
 - Physical Plan to Physical Plan
 
 <p align="center">
-    <img alt="Tree Transformation Same Type" src="../assets/images/posts/spark-core-concepts/catalyst-transform-same-type.png" />
+    <img alt="Expressions Tree Transformation" src="../assets/images/posts/spark-execution-engine/catalyst-transform-same-type.png" />
 </p>
 <p align="center">
-    <em>Tree Transformation Same Type</em>
+    <em>Expressions Tree Transformation</em>
 </p>
 
 Transformation applied in order to go from the Left tree to the right one is defined as **Constant folding** rule :
@@ -111,23 +118,6 @@ transform{
         Literal(x+y)
 }
 ```
-
-Example showed above is a really simple one and thus, can be optimized using only one simple transformation rule. In real world scenarios,
-we'd like the Spark Engine to apply multiple rules.
-
-Actually this is what it does, is uses a **Rule Executor** to transform a tree to another tree of the same type by applying many rules in batches, and,
-every rule is implemented based on its transformation.
-
-<p align="center">
-    <img alt="Rule Executor" src="../assets/images/posts/spark-core-concepts/rule-executor.png" />
-</p>
-<p align="center">
-    <em>Rule Executor</em>
-</p>
-
-**Rule Executor** has two approaches of applying rules :
-- Fixed Point : apply each rule in a batch sequentially, over and over again, until the tree does not change anymore
-- Apply Once : each rule in a batch is applied only once
 
 ### Different plan type Transformation
 
@@ -163,6 +153,24 @@ val df2 = spark.range(20000000).toDF("id2").withColumn("value", rand() * 1000000
 val df3 = df1.join(df2, df1("id1") === df2("id2")).filter("value > 50 * 1000").select(col("id1"), col("value").plus(1).plus(2).alias("v")).groupBy("id1").sum("v")
 ```
 
+### Rule Executor 
+
+Examples showed above are really simple and thus, can be optimized using only few transformation rules. In real world scenarios,
+we'd like the Spark Engine to apply multiple rules.
+
+Actually this is what it does, is uses a **Rule Executor** to transform a tree to another tree of the same type by applying many rules in batches.
+
+<p align="center">
+    <img alt="Rule Executor" src="../assets/images/posts/spark-execution-engine/rule-executor.png" />
+</p>
+<p align="center">
+    <em>Rule Executor</em>
+</p>
+
+**Rule Executor** has two approaches of applying rules :
+- Fixed Point : apply each rule in a batch sequentially, over and over again, until the tree does not change anymore
+- Apply Once : each rule in a batch is applied only once
+
 # Spark Query Execution in Action
 
 ## Logical Planning
@@ -172,7 +180,7 @@ it describes computation on data without defining how these computations are don
 (it does not specify join algorithms for example).
 
 <p align="center">
-    <img alt="Spark Logical Planning" src="../assets/images/posts/spark-core-concepts/logical-planning.png" />
+    <img alt="Spark Logical Planning" src="../assets/images/posts/spark-execution-engine/logical-planning.png" />
 </p>
 <p align="center">
     <em>Spark Logical Planning</em>
@@ -185,7 +193,7 @@ First Catalyst parses the code written using the Dataframe, Datasets API or in S
 `df3` tree will be parsed into the Tree below.
 
 <p align="center">
-    <img alt="Unresolved Logical Plan" src="../assets/images/posts/spark-core-concepts/unresolved-logical-plan.png" />
+    <img alt="Unresolved Logical Plan" src="../assets/images/posts/spark-execution-engine/unresolved-logical-plan.png" />
 </p>
 <p align="center">
     <em>Unresolved Logical Plan</em>
@@ -250,12 +258,12 @@ If there was a problem with the Catalog and the operations we're doing on the da
 Once the Logical Plan is resolved, Catalyst Optimizer will take the initiative to actually Optimize the Logical Plan
 by applying same plan type transformations.
 
-In a nutshell, Catalyst with the help of **Rule Executor** applies **Rule-based optimization**, these rules includes : Constant folding,
+In a nutshell, Catalyst with the help of [Rule Executor](#rule-executor) applies **Rule-based optimization**, these rules includes : Constant folding,
 Predicate push-down, Projection pruning and other rules (even user coded rules).
 
 #### Constant Folding
 
-Which we've already seen in [Same plan type Transformations]
+Which we've already seen in [Same plan type Transformations](#same-plan-type-transformation).
 
 #### Predicate push-down
 
@@ -264,7 +272,7 @@ This kind of rules optimizes where the `filter` operations happens.
 By applying this rule to the tree in the `Unresolved Logical Plan` image will be transformed into the tree below :
 
 <p align="center">
-    <img alt="Predicate Push-down Transformation" src="../assets/images/posts/spark-core-concepts/catalyst-predicate-pushdown.png" />
+    <img alt="Predicate Push-down Transformation" src="../assets/images/posts/spark-execution-engine/catalyst-predicate-pushdown.png" />
 </p>
 <p align="center">
     <em>Predicate Push-down Transformation</em>
@@ -277,7 +285,7 @@ This kind of rules optimizes where the `select` operations happens.
 By applying this rule to the tree in the `Unresolved Logical Plan` image will be transformed into the tree below :
 
 <p align="center">
-    <img alt="Projection Pruning Transformation" src="../assets/images/posts/spark-core-concepts/catalyst-predicate-pushdown.png" />
+    <img alt="Projection Pruning Transformation" src="../assets/images/posts/spark-execution-engine/catalyst-predicate-pushdown.png" />
 </p>
 <p align="center">
     <em>Predicate Push-down Transformation</em>
@@ -286,7 +294,7 @@ By applying this rule to the tree in the `Unresolved Logical Plan` image will be
 After applying these transformations to the tree, Catalyst will return the tree below :
 
 <p align="center">
-    <img alt="Catalyst Optimized Logical Plan" src="../assets/images/posts/spark-core-concepts/catalyst-optimized.png" />
+    <img alt="Catalyst Optimized Logical Plan" src="../assets/images/posts/spark-execution-engine/catalyst-optimized.png" />
 </p>
 <p align="center">
     <em>Catalyst Optimized Logical Plan</em>
@@ -309,12 +317,9 @@ Aggregate [id1#2L], [id1#2L, sum(v#183) AS sum(v)#189]
 As you can see in the Optimized Logical Plan and on the figure **Catalyst Optimized Logical Plan**, the filter condition was
 moved above the `Scan` node thanks to `Predicate push-down`. Also, the `Projection` is pushed before the `Join` operation thanks to `Projection Pruning`.
 
-## Physical Plan
-
-Coming soon
+## Physical Planning
 
 # References
 
-Spark The Definitive Guide.
-Josh Rosen talk https://www.youtube.com/watch?v=5ajs8EIPWGI
-[Same plan type Transformations]: <#same-plan-type-transformation> "Same plan type Transformation"
+- **Yin Huai** "A Deep Dive into Spark SQL's Catalyst Optimizer" [talk](https://www.youtube.com/watch?v=RmUn5vHlevc)
+- **Jacek Laskowski** "The Internals of Spark" [gitbook](https://jaceklaskowski.gitbooks.io/mastering-spark-sql/content/)
