@@ -63,23 +63,27 @@ It is the base class for [Expressions](#expression) and [Query Plans](#query-pla
 Expressions are executable TreeNodes in Catalyst Tree that can evaluate a result given a certain input values. In other terms, 
 Expressions can produce a JVM object per `Internal Row`.
 
-Catalyst Expressions have a lot of uses, few examples :
-- Spark's native functions that you can find in [Spark API Reference](https://spark.apache.org/docs/latest/api/scala/org/apache/spark/sql/functions$.html).
-- [Catalyst Transformations](#trees-transformations)
-- [Logical Planning](#logical-plan) and [Physical Planning](#physical-plan)
-
-Catalyst's Expression abstract class has several implementations :
+Catalyst's Expression abstract class has several trait implementations :
 - `Nondeterministic` : a deterministic expression is like a [pure function](https://en.wikipedia.org/wiki/Pure_function) in Functional Programming
-- `Stateful` : an expression that contains mutable state. For example, MonotonicallyIncreasingID and Rand. A stateful expression is always non-deterministic
 - `Unevaluable` : an expression that is not supposed to be evaluated (`eval`, `doGenCode` and `genCode` Expression methods are not Implemented)
-- `NullIntolerant` : an expression that is null intolerant (i.e. any null input will result in null output
+- `LeafExpression` : an expression that has no child (i.e : no child TreeNode)
+- `UnaryExpression` : an expression with one and only one child
+- `BinaryExpression` : an expression with exactly two children
 - `NamedExpression` : an Expression that is named 
 - `Attribute` : an Expression that represents an Attribute. It's always LeafExpression, NamedExpression and NullIntolerant at the same time
+
+Catalyst Expressions are used almost everywhere. For Instance, Spark's native functions that you can find in [Spark API Reference](https://spark.apache.org/docs/latest/api/scala/org/apache/spark/sql/functions$.html) 
+are built using Catalyst Expressions. For example, when you want to add a column holding the literal value `random_string_value` to your Dataset,
+you'd probably want to use `lit` function, `lit` is build on-top of `Literal` Catalyst Expression which is a `LeafExpression`.
+
+Expression are also used in [Catalyst Transformations](#trees-transformations), in [Logical Operators](#logical-plan) and [Physical Operators](#physical-plan), etc.
 
 #### QueryPlan
 
 Query Plans is an abstract class for Spark's [Logical Planning](#logical-plan) and [Physical Planning](#physical-plan).
 It's a tree of TreeNodes that in turn can have trees of Catalyst Expressions.
+
+A QueryPlan has sequence of `Attribute` Expressions 
 ## Trees transformations
 
 Trees transformations are defined as Partial Functions.
