@@ -7,6 +7,7 @@ image: assets/images/posts/spark-core-concepts/featured.png
 toc: true
 show-post-image: false
 featured: hidden
+disclaimer: "This article is currently being written. Some parts may be incomplete or badly written."
 ---
 
 I think that we're all familiar with the Diagram below, if it's not your case, well, basically, it represents what Spark
@@ -39,26 +40,46 @@ Catalyst is a Framework for representing and manipulating a **Dataflow graph** a
 Spark >= 2.0 uses Catalyst Framework to build an extensible execution plan optimizer for Spark SQL based APIs. It supports both rule based and cost bases
 optimizations.
 
-Basically, when you process data using Spark SQL, Dataframe or Datasets API, Catalyst will parse your processing queries into trees, then, 
-Catalyst will manipulate those threes to validate, optimize your queries and compile them to JVM's bytecode. 
+Basically, when you process data using Spark SQL, Dataframe or Datasets API, Catalyst will parse your queries into trees, then, 
+Catalyst will manipulate those trees to validate, optimize your queries and compile them to JVM's bytecode. 
 
 It may be a bit abstract for now, but don't worry, this article's goal is to explain to you everything going under Spark's hood.
 
 ## Trees
 
-So, trees are the main data type in Spark Execution Planning. They're parsed from a given user code of a Spark Application and transformed
-in order to validate and optimize the execution plan.
+So, trees are the main data type in Spark Execution Planning. They're parsed from a given user code of a Spark Application and 
+represent a tree of relational operators of a structures query. 
 
-Tree nodes can be `Expressions` or `QueryPlans`.
+Catalyst Trees are analyzed and transformed in order to validate and optimize the query execution.
 
-### Expressions
+### TreeNodes
 
-Expressions are mostly used in Spark's Native Functions, such as `lit`, `add_months` and so on.
+TreeNodes are recursive data structures that can have zero, one or many children which themselves are TreeNodes.
 
-You can find all Catalyst's expression on [Spark's github](https://github.com/apache/spark/tree/master/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/expressions).
+It is the base class for [Expressions](#expression) and [Query Plans](#query-plan).
 
-### QueryPlans
+#### Expression
 
+Expressions are executable TreeNodes in Catalyst Tree that can evaluate a result given a certain input values. In other terms, 
+Expressions can produce a JVM object per `Internal Row`.
+
+Catalyst Expressions have a lot of uses, few examples :
+- Spark's native functions that you can find in [Spark API Reference](https://spark.apache.org/docs/latest/api/scala/org/apache/spark/sql/functions$.html).
+- [Catalyst Transformations](#trees-transformations)
+- [Logical Planning](#logical-plan) and [Physical Planning](#physical-plan)
+
+Catalyst's Expression abstract class has several implementations :
+- `Nondeterministic` : a deterministic expression is like a [pure function](https://en.wikipedia.org/wiki/Pure_function) in Functional Programming
+- `Stateful` : an expression that contains mutable state. For example, MonotonicallyIncreasingID and Rand. A stateful expression is always non-deterministic
+- `Unevaluable` : an expression that is not supposed to be evaluated (`eval`, `doGenCode` and `genCode` Expression methods are not Implemented)
+- `NullIntolerant` : an expression that is null intolerant (i.e. any null input will result in null output
+- `NamedExpression` : an Expression that is named 
+- `Attribute` : an Expression that represents an Attribute. It's always LeafExpression, NamedExpression and NullIntolerant at the same time
+
+#### QueryPlan
+
+Query Plans is an abstract class for Spark's [Logical Planning](#logical-plan) and [Physical Planning](#physical-plan).
+It's a tree of TreeNodes that in turn can have trees of Catalyst Expressions.
 ## Trees transformations
 
 Trees transformations are defined as Partial Functions.
@@ -137,6 +158,8 @@ val df1 = spark.range(10000000).toDF("id1").withColumn("name", lit("arslane"))
 val df2 = spark.range(20000000).toDF("id2").withColumn("value", rand() * 10000000)
 val df3 = df1.join(df2, df1("id1") === df2("id2")).filter("value > 50 * 1000").select(col("id1"), col("value").plus(1).plus(2).alias("v")).groupBy("id1").sum("v")
 ```
+
+# Spark Query Execution in Action
 
 ## Logical Planning
 

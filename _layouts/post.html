@@ -17,8 +17,6 @@ post_class: post-template
         </div>
 
         <!-- Post -->
-
-
         <div class="col-md-9 flex-md-unordered">
             <div class="mainheading">
 
@@ -52,6 +50,9 @@ post_class: post-template
             <!-- End Featured Image -->
 
             <!-- Post Content -->
+            {% if page.disclaimer %}
+            <p><em>{{page.disclaimer}}</em></p>
+            {% endif %}
             <div class="article-post">
                 {{content}}
             </div>

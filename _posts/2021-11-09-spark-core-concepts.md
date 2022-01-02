@@ -2,7 +2,7 @@
 layout: post
 title:  "Spark Core Concepts"
 author: ares
-categories: [ spark ]
+categories: [ ]
 image: assets/images/posts/spark-core-concepts/featured.png
 toc: true
 show-post-image: false

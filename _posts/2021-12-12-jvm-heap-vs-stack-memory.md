@@ -2,7 +2,7 @@
 layout: post
 title:  "JVM Heap Space vs Stack Memory"
 author: ares
-categories: [ jvm, memory management, heap space, stack memory, scala ]
+categories: [ ]
 image: assets/images/posts/jvm-heap-space-vs-stack-memory/featured.png
 toc: true
 show-post-image: false
