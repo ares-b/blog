@@ -7,7 +7,7 @@ image: assets/images/posts/spark-execution-engine/featured.png
 toc: true
 show-post-image: false
 featured: hidden
-disclaimer: "/!\ This article is currently being written. Some parts may be incomplete or badly written."
+disclaimer: "/!\\ This article is currently being written. Some parts may be incomplete or badly written."
 ---
 
 I think that we're all familiar with the Diagram below, if it's not your case, well, basically, it represents what Spark
@@ -110,7 +110,7 @@ There are three main Logical Operators, and they can have zero, one or two child
 
 Examples of Logical Operators are : Join (BinaryNode), Projection (UnaryNode), etc.
 
-TODO : Add Logical Operator Code
+TODO : Refactor explanation of Logical Plan
 
 ### Physical Plan
 
