@@ -7,7 +7,7 @@ image: assets/images/posts/spark-execution-engine/featured.png
 toc: true
 show-post-image: false
 featured: hidden
-disclaimer: "This article is currently being written. Some parts may be incomplete or badly written."
+disclaimer: "/!\ This article is currently being written. Some parts may be incomplete or badly written."
 ---
 
 I think that we're all familiar with the Diagram below, if it's not your case, well, basically, it represents what Spark
@@ -47,9 +47,22 @@ It may be a bit abstract for now, but don't worry, this article's goal is to exp
 
 ## Catalog
 
+Catalog or `SessionCatalog` is the registry of relational entities (databases, tables, views, functions and partitions) in a `SparkSession`.
+It's a layer over the `ExternalCatalog` which allows for different metastore to be used (you can even write your own Catalog).
+
+Catalog enables :
+- Metadata centralization
+- Providing a single source of truth for the stored data
+- Data Governance 
+
+Catalog can be accessed through the `SessionState` of a `SparkSessions` which is the state separation layer between SparkSessions. 
+It contains SQL parsers, UDFs and everything else that depends on a `SQLConf`.
+
+Catalog in used by the Catalyst to validate and resolve [Logical QueryPlans](#logical-plan) during the Execution Planning.
+
 ## Trees
 
-So, trees are the main data type in Spark Execution Planning. They're parsed from a given user code of a Spark Application and 
+Trees are the main data type in Spark Execution Planning. They're parsed from a given user code of a Spark Application and 
 represent a tree of relational operators of a structures query. 
 
 Catalyst Trees are analyzed and transformed in order to validate and optimize the query execution.
@@ -85,11 +98,23 @@ Expression are also used in [Catalyst Transformations](#trees-transformations), 
 Query Plans is an abstract class for Spark's [Logical Planning](#logical-plan) and [Physical Planning](#physical-plan).
 It's a tree of operators that have a tree of expressions.
 
-A QueryPlan has sequence of `Attribute` Expressions that will be used to build the output schema.
-
 ### Logical Plan
 
+Logical Plan is an extension of QueryPlan for Logical Operators used to build a Logical Query Plan. Which is a tree of `TreeNode`s of 
+Logical Operators that in turn can have trees of Catalyst `Expression`s.
+
+There are three main Logical Operators, and they can have zero, one or two children :
+- `LeafNode` : Logical Operator with no child operators
+- `UnaryNode` : Logical Operator with exactly one child operator
+- `BinaryNode` : Logical Operator with exactly twi children operators
+
+Examples of Logical Operators are : Join (BinaryNode), Projection (UnaryNode), etc.
+
+TODO : Add Logical Operator Code
+
 ### Physical Plan
+
+TODO : Explain Physical Plan / Operators
 
 ## Trees transformations
 
@@ -318,6 +343,8 @@ As you can see in the Optimized Logical Plan and on the figure **Catalyst Optimi
 moved above the `Scan` node thanks to `Predicate push-down`. Also, the `Projection` is pushed before the `Join` operation thanks to `Projection Pruning`.
 
 ## Physical Planning
+
+TODO : Explain how Physical Planning is done
 
 # References
 
