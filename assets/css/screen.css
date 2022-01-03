@@ -237,8 +237,10 @@ section.recent-posts {
 }
 
 .toc ul {
-    list-style: decimal;
     font-weight: 100;
+    margin-left: 0px;
+    list-style-type: none;
+    padding-left: 20px;
 }
 
 .author-meta {
