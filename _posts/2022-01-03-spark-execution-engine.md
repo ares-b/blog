@@ -20,7 +20,7 @@ does internally when processing data using Spark SQL.
     <em>Spark Execution Planning</em>
 </p>
 
-First, one thing to know, is that Execution planning isn't lazy evaluated. The code snippet below shows that.
+First thing to know, is that Execution planning isn't lazy evaluated. The code snippet below shows that.
 
 ```
 case class Car(brand : String , name : String, maxSpeed : Int)
@@ -47,18 +47,40 @@ It may be a bit abstract for now, but don't worry, this article's goal is to exp
 
 ## Catalog
 
-Catalog or `SessionCatalog` is the registry of relational entities (databases, tables, views, functions and partitions) in a `SparkSession`.
-It's a layer over the `ExternalCatalog` which allows for different metastore to be used (you can even write your own Catalog).
+Catalog is the interface for managing a metastore of relational entities (databases, tables, views, functions and partitions) in a `SparkSession`.
 
 Catalog enables :
 - Metadata centralization
 - Providing a single source of truth for the stored data
 - Data Governance 
 
-Catalog can be accessed through the `SessionState` of a `SparkSessions` which is the state separation layer between SparkSessions. 
+Catalog can be accessed through `SparkSession.catalog` attribute which is a lazy interface to the currently used metastore.
+
+Internally, `catalog` property creates a `CatalogImpl` which uses `SessionCatalog`.
+`SessionCatalog` is a layer over the `ExternalCatalog` which allows for different metastore to be used (you can even write your own Catalog).
+
+`SessionCatalog` can be accessed through the `SessionState` of a `SparkSessions` which is the state separation layer between SparkSessions. 
 It contains SQL parsers, UDFs and everything else that depends on a `SQLConf`.
 
-Catalog in used by the Catalyst to validate and resolve [Logical QueryPlans](#logical-plan) during the Execution Planning.
+`SessionState` is lazy evaluated and created only when requested from the `SparkSession`, it uses the configuration 
+property `spark.sql.catalogImplementation` to load and create a `BaseSessionStateBuilder` which in turn, will create a `SessionState` instance.
+
+Based on `spark.sql.catalogImplementation` property, `SparkSession` will create : 
+- A `SessionStateBuilder` : the default one, will manage an `in-memory` catalog
+- A `HiveSessionStateBuilder` : will manage a `hive` catalog.
+
+Catalog in used by the Catalyst to validate and resolve [Logical QueryPlans](#logical-plan) during the Logical Planning phase.
+
+TODO : add figures
+
+<!-- 
+https://jaceklaskowski.gitbooks.io/mastering-spark-sql/content/spark-sql-SessionState.html
+https://jaceklaskowski.gitbooks.io/mastering-spark-sql/content/spark-sql-StaticSQLConf.html#spark.sql.catalogImplementation
+https://jaceklaskowski.gitbooks.io/mastering-spark-sql/content/spark-sql-BaseSessionStateBuilder.html
+https://jaceklaskowski.gitbooks.io/mastering-spark-sql/content/spark-sql-SessionCatalog.html
+https://jaceklaskowski.gitbooks.io/mastering-spark-sql/content/spark-sql-CatalogImpl.html
+https://jaceklaskowski.gitbooks.io/mastering-spark-sql/content/spark-sql-Catalog.html
+-->
 
 ## Trees
 
